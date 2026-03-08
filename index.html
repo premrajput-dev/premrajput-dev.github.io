@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Prem Rajput — Robotics & Autonomous Engineering</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,600;0,700;1,300&family=Barlow:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0b0e12;
+  --surface:#111519;
+  --line:#1d2530;
+  --accent:#00d4ff;
+  --accent2:#39ff7a;
+  --warn:#ff6b35;
+  --text:#dde4ed;
+  --muted:#5a6a7e;
+  --mono:'JetBrains Mono',monospace;
+  --sans:'Barlow',sans-serif;
+}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);overflow-x:hidden}
+
+/* ── BLUEPRINT GRID ── */
+body::before{
+  content:'';position:fixed;inset:0;
+  background-image:
+    linear-gradient(var(--line) 1px,transparent 1px),
+    linear-gradient(90deg,var(--line) 1px,transparent 1px);
+  background-size:40px 40px;
+  opacity:.4;pointer-events:none;z-index:0;
+}
+
+/* ── NAV ── */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  display:flex;justify-content:space-between;align-items:center;
+  padding:0 3rem;height:56px;
+  background:rgba(11,14,18,.92);
+  border-bottom:1px solid var(--line);
+  backdrop-filter:blur(12px);
+}
+.nav-id{
+  font-family:var(--mono);font-size:.75rem;font-weight:600;
+  letter-spacing:.08em;color:var(--accent);
+  display:flex;align-items:center;gap:.6rem;
+}
+.nav-id::before{content:'[';color:var(--muted)}
+.nav-id::after{content:']';color:var(--muted)}
+nav ul{list-style:none;display:flex;gap:0}
+nav a{
+  display:block;padding:.5rem 1.1rem;
+  font-family:var(--mono);font-size:.72rem;letter-spacing:.06em;
+  color:var(--muted);text-decoration:none;
+  border-left:1px solid var(--line);
+  transition:color .2s,background .2s;
+}
+nav a:hover{color:var(--accent);background:rgba(0,212,255,.04)}
+nav ul li:last-child a{border-right:1px solid var(--line)}
+.nav-status{
+  font-family:var(--mono);font-size:.65rem;letter-spacing:.1em;
+  color:var(--muted);display:flex;align-items:center;gap:.5rem;
+}
+.status-led{width:6px;height:6px;border-radius:50%;background:var(--accent2);
+  box-shadow:0 0 6px var(--accent2);animation:blink 2s ease-in-out infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+
+/* ── HERO ── */
+#hero{
+  min-height:100vh;position:relative;z-index:1;
+  display:grid;grid-template-columns:1fr 1fr;
+  align-items:center;padding-top:56px;
+}
+.hero-left{padding:4rem 3rem 4rem 3rem;border-right:1px solid var(--line)}
+.sys-label{
+  font-family:var(--mono);font-size:.65rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--muted);margin-bottom:2rem;
+  display:flex;align-items:center;gap:.8rem;
+}
+.sys-label::before{content:'> ';color:var(--accent2)}
+h1{
+  font-family:var(--sans);font-size:clamp(2.8rem,6vw,5rem);
+  font-weight:700;line-height:1;letter-spacing:-.02em;
+  margin-bottom:.4rem;
+}
+.h1-sub{
+  font-family:var(--mono);font-size:clamp(.9rem,2vw,1.2rem);font-weight:300;
+  color:var(--accent);letter-spacing:.04em;margin-bottom:2rem;
+}
+.hero-desc{
+  font-size:.95rem;line-height:1.8;color:var(--muted);
+  font-weight:300;max-width:440px;margin-bottom:3rem;
+  border-left:2px solid var(--line);padding-left:1.2rem;
+}
+.hero-desc em{font-style:normal;color:var(--text)}
+.btn-row{display:flex;gap:.8rem;flex-wrap:wrap}
+.btn{
+  display:inline-flex;align-items:center;gap:.5rem;
+  padding:.7rem 1.6rem;font-family:var(--mono);font-size:.75rem;
+  font-weight:600;letter-spacing:.06em;text-decoration:none;
+  border:1px solid;transition:all .2s;
+}
+.btn-primary{border-color:var(--accent);color:var(--accent);background:rgba(0,212,255,.06)}
+.btn-primary:hover{background:rgba(0,212,255,.14);box-shadow:0 0 20px rgba(0,212,255,.15)}
+.btn-ghost{border-color:var(--line);color:var(--muted)}
+.btn-ghost:hover{border-color:var(--muted);color:var(--text)}
+
+/* Hero right — animated robot schematic */
+.hero-right{
+  padding:4rem 3rem;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:2rem;
+  position:relative;
+}
+.schematic{
+  width:220px;height:260px;position:relative;
+  display:flex;align-items:center;justify-content:center;
+}
+.sch-ring{
+  position:absolute;border-radius:50%;border:1px solid;
+  animation:rotateSlow 12s linear infinite;
+}
+.sch-ring:nth-child(1){width:220px;height:220px;border-color:rgba(0,212,255,.2);animation-duration:20s}
+.sch-ring:nth-child(2){width:160px;height:160px;border-color:rgba(0,212,255,.15);animation-direction:reverse;animation-duration:14s}
+.sch-ring:nth-child(3){width:100px;height:100px;border-color:rgba(57,255,122,.2);animation-duration:8s}
+@keyframes rotateSlow{to{transform:rotate(360deg)}}
+.sch-dot{
+  position:absolute;width:6px;height:6px;border-radius:50%;
+  background:var(--accent);
+  box-shadow:0 0 8px var(--accent);
+}
+.sch-dot:nth-child(4){top:0;left:50%;transform:translateX(-50%)}
+.sch-dot:nth-child(5){bottom:0;left:50%;transform:translateX(-50%)}
+.sch-dot:nth-child(6){left:0;top:50%;transform:translateY(-50%)}
+.sch-dot:nth-child(7){right:0;top:50%;transform:translateY(-50%)}
+.sch-center{
+  width:60px;height:60px;
+  border:1px solid var(--accent);
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.8rem;background:rgba(0,212,255,.05);
+  position:relative;z-index:2;
+  animation:centerPulse 3s ease-in-out infinite;
+}
+@keyframes centerPulse{0%,100%{box-shadow:0 0 0 0 rgba(0,212,255,.3)}50%{box-shadow:0 0 0 12px rgba(0,212,255,0)}}
+
+/* Spec readout */
+.spec-readout{
+  font-family:var(--mono);font-size:.68rem;
+  color:var(--muted);line-height:2;
+  border:1px solid var(--line);padding:1.2rem 1.5rem;
+  background:rgba(0,212,255,.02);width:100%;max-width:280px;
+}
+.spec-readout .key{color:var(--muted)}
+.spec-readout .val{color:var(--accent2);float:right}
+.spec-readout .val.r{color:var(--accent)}
+
+/* ── SECTION BASE ── */
+section.main{position:relative;z-index:1;border-top:1px solid var(--line)}
+.inner{max-width:1100px;margin:0 auto;padding:5rem 3rem}
+.sec-head{margin-bottom:3.5rem}
+.sec-code{
+  font-family:var(--mono);font-size:.65rem;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--accent);
+  margin-bottom:.8rem;display:block;
+}
+.sec-code::before{content:'// '}
+h2{font-size:clamp(1.8rem,4vw,2.8rem);font-weight:700;letter-spacing:-.02em}
+h2 span{color:var(--muted);font-weight:300}
+
+/* ── ABOUT ── */
+.about-grid{display:grid;grid-template-columns:1.5fr 1fr;gap:4rem;align-items:start}
+.about-text p{font-size:.93rem;line-height:1.85;color:var(--muted);font-weight:300;margin-bottom:1rem}
+.about-text p strong{color:var(--text);font-weight:500}
+
+.info-list{list-style:none;border:1px solid var(--line)}
+.info-list li{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:.8rem 1.2rem;border-bottom:1px solid var(--line);
+  font-family:var(--mono);font-size:.75rem;
+}
+.info-list li:last-child{border-bottom:none}
+.info-list .k{color:var(--muted)}
+.info-list .v{color:var(--text);font-weight:600}
+.info-list .v.online{color:var(--accent2)}
+
+/* ── SKILLS ── */
+#skills{background:rgba(0,212,255,.01)}
+.skills-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line)}
+.skill-block{
+  background:var(--bg);padding:2rem;
+  transition:background .2s;
+}
+.skill-block:hover{background:var(--surface)}
+.skill-block-title{
+  font-family:var(--mono);font-size:.7rem;font-weight:700;
+  letter-spacing:.12em;text-transform:uppercase;
+  color:var(--accent);margin-bottom:1.5rem;
+  padding-bottom:.8rem;border-bottom:1px solid var(--line);
+  display:flex;align-items:center;gap:.5rem;
+}
+.skill-block-title::before{content:'◆';font-size:.5rem}
+.skill-item{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:.55rem 0;border-bottom:1px solid rgba(29,37,48,.6);
+  font-size:.84rem;
+}
+.skill-item:last-child{border-bottom:none}
+.skill-item .name{color:var(--text);font-weight:400}
+.skill-bar{width:80px;height:2px;background:var(--line);position:relative;overflow:hidden}
+.skill-fill{height:100%;background:var(--accent);transform:scaleX(0);transform-origin:left;transition:transform .8s ease .1s}
+.skill-item.vis .skill-fill{transform:scaleX(1)}
+.skill-fill.g{background:var(--accent2)}
+
+/* ── PROJECTS ── */
+.projects-list{display:flex;flex-direction:column;gap:1px;background:var(--line)}
+.proj{
+  background:var(--bg);padding:2rem 2.5rem;
+  display:grid;grid-template-columns:48px 1fr auto;gap:2rem;align-items:center;
+  transition:background .2s;cursor:default;
+}
+.proj:hover{background:var(--surface)}
+.proj-num{
+  font-family:var(--mono);font-size:1.5rem;font-weight:700;
+  color:var(--line);transition:color .2s;
+}
+.proj:hover .proj-num{color:var(--accent)}
+.proj-body{}
+.proj-name{font-size:1.1rem;font-weight:600;letter-spacing:-.01em;margin-bottom:.35rem}
+.proj-desc{font-size:.83rem;color:var(--muted);font-weight:300;line-height:1.6;margin-bottom:.8rem}
+.proj-tags{display:flex;gap:.4rem;flex-wrap:wrap}
+.tag{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.05em;
+  padding:.18rem .6rem;border:1px solid var(--line);
+  color:var(--muted);
+}
+.proj-link{
+  font-family:var(--mono);font-size:.72rem;color:var(--muted);
+  text-decoration:none;letter-spacing:.06em;
+  white-space:nowrap;transition:color .2s;
+  display:flex;align-items:center;gap:.3rem;
+}
+.proj-link:hover{color:var(--accent)}
+
+/* ── CONTACT ── */
+#contact .inner{max-width:640px;text-align:center}
+.contact-email{
+  display:inline-block;font-family:var(--mono);font-size:1rem;font-weight:600;
+  color:var(--accent);text-decoration:none;letter-spacing:.04em;
+  border-bottom:1px solid rgba(0,212,255,.3);padding-bottom:.2rem;
+  transition:border-color .2s,color .2s;margin:2rem 0 2.5rem;
+}
+.contact-email:hover{border-color:var(--accent)}
+.contact-desc{font-size:.9rem;color:var(--muted);line-height:1.75;font-weight:300;margin-bottom:2.5rem}
+.soc-row{display:flex;justify-content:center;gap:.6rem;flex-wrap:wrap}
+.soc{
+  font-family:var(--mono);font-size:.72rem;letter-spacing:.08em;
+  padding:.5rem 1.2rem;border:1px solid var(--line);
+  color:var(--muted);text-decoration:none;
+  transition:all .2s;
+}
+.soc:hover{border-color:var(--accent);color:var(--accent);background:rgba(0,212,255,.04)}
+
+/* ── FOOTER ── */
+footer{
+  position:relative;z-index:1;
+  border-top:1px solid var(--line);
+  padding:1.5rem 3rem;
+  display:flex;justify-content:space-between;align-items:center;
+  font-family:var(--mono);font-size:.65rem;letter-spacing:.06em;color:var(--muted);
+}
+footer a{color:var(--muted);text-decoration:none;transition:color .2s}
+footer a:hover{color:var(--accent)}
+
+/* ── REVEAL ── */
+.rv{opacity:0;transform:translateY(24px);transition:opacity .65s ease,transform .65s ease}
+.rv.vis{opacity:1;transform:translateY(0)}
+
+@media(max-width:800px){
+  nav{padding:0 1.2rem}
+  nav ul{display:none}
+  .nav-status{display:none}
+  #hero{grid-template-columns:1fr}
+  .hero-right{border-top:1px solid var(--line);padding:3rem 2rem}
+  .hero-left{padding:3rem 1.5rem}
+  .about-grid{grid-template-columns:1fr;gap:2.5rem}
+  .skills-grid{grid-template-columns:1fr}
+  .skill-block{border-bottom:1px solid var(--line)}
+  .proj{grid-template-columns:32px 1fr;gap:1rem}
+  .proj-link{display:none}
+  .inner{padding:3.5rem 1.5rem}
+  footer{flex-direction:column;gap:.5rem;text-align:center;padding:1.5rem}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-id">PREM_RAJPUT</div>
+  <ul>
+    <li><a href="#about">About</a></li>
+    <li><a href="#skills">Skills</a></li>
+    <li><a href="#projects">Projects</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+  <div class="nav-status"><span class="status-led"></span>PR_ONLINE</div>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-left">
+    <div class="sys-label">Robotics &amp; Autonomous Engineering Student</div>
+    <h1>Prem<br>Rajput</h1>
+    <div class="h1-sub">// Building intelligent machines</div>
+    <p class="hero-desc">
+      Engineering student passionate about <em>autonomous systems</em>, <em>robot perception</em>, and <em>control theory</em>. I build things that move, sense, and decide on their own.
+    </p>
+    <div class="btn-row">
+      <a href="#projects" class="btn btn-primary">View Projects →</a>
+      <a href="mailto:pranyrajput7@gmail.com" class="btn btn-ghost">Contact Me</a>
+    </div>
+  </div>
+
+  <div class="hero-right">
+    <div class="schematic">
+      <div class="sch-ring"></div>
+      <div class="sch-ring"></div>
+      <div class="sch-ring"></div>
+      <div class="sch-dot"></div>
+      <div class="sch-dot"></div>
+      <div class="sch-dot"></div>
+      <div class="sch-dot"></div>
+      <div class="sch-center">🌕</div>
+    </div>
+    <div class="spec-readout">
+      <div><span class="key">DEGREE</span><span class="val r">B.Tech Robotics</span></div>
+      <div><span class="key">YEAR</span><span class="val">1st Year</span></div>
+      <div><span class="key">FOCUS</span><span class="val">Autonomous Systems</span></div>
+      <div><span class="key">STATUS</span><span class="val">OPEN_TO_INTERN</span></div>
+      <div><span class="key">LOCATION</span><span class="val">India,Pune</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section class="main" id="about">
+  <div class="inner">
+    <div class="sec-head rv">
+      <span class="sec-code">section_01 — about</span>
+      <h2>Who I am <span>& what I do</span></h2>
+    </div>
+    <div class="about-grid">
+      <div class="about-text rv">
+        <p>I'm <strong>Prem Rajput</strong>, a Robotics and Autonomous Engineering student driven by one question: <em>how do we make machines that understand the world?</em></p>
+        <p>My work sits at the intersection of <strong>mechanical design, embedded systems, and machine learning</strong>. I've built line-following robots, worked on SLAM-based navigation, and experimented with ROS2 for autonomous path planning.</p>
+        <p>I'm comfortable going from low-level microcontroller programming to high-level perception pipelines. I care about systems that are not just functional, but <strong>reliable and safe in the real world</strong>.</p>
+        <br>
+        <a href="#" class="btn btn-primary">Download CV →</a>
+      </div>
+      <ul class="info-list rv">
+        <li><span class="k">Name</span><span class="v">Prem Rajput</span></li>
+        <li><span class="k">Degree</span><span class="v">B.Tech Robotics</span></li>
+        <li><span class="k">University</span><span class="v"> MIT ADT </span></li>
+        <li><span class="k">Year</span><span class="v">1st Year</span></li>
+        <li><span class="k">Email</span><span class="v">pranyrajput7@gmail.com</span></li>
+        <li><span class="k">Location</span><span class="v">India, Pune</span></li>
+        <li><span class="k">Available</span><span class="v online">● Internship</span></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- SKILLS -->
+<section class="main" id="skills">
+  <div class="inner">
+    <div class="sec-head rv">
+      <span class="sec-code">section_02 — skills</span>
+      <h2>Technical <span>toolkit</span></h2>
+    </div>
+    <div class="skills-grid rv">
+
+      <div class="skill-block">
+        <div class="skill-block-title">Robotics & Hardware</div>
+        <div class="skill-item"><span class="name">ROS / ROS2</span><div class="skill-bar"><div class="skill-fill" style="width:65%"></div></div></div>
+        <div class="skill-item"><span class="name">Arduino / STM32</span><div class="skill-bar"><div class="skill-fill" style="width:88%"></div></div></div>
+        <div class="skill-item"><span class="name">Raspberry Pi</span><div class="skill-bar"><div class="skill-fill" style="width:70%"></div></div></div>
+        <div class="skill-item"><span class="name">SLAM / Navigation</span><div class="skill-bar"><div class="skill-fill" style="width:60%"></div></div></div>
+        <div class="skill-item"><span class="name">Sensor Fusion</span><div class="skill-bar"><div class="skill-fill" style="width:72%"></div></div></div>
+        <div class="skill-item"><span class="name">CAD / SolidWorks</span><div class="skill-bar"><div class="skill-fill" style="width:65%"></div></div></div>
+      </div>
+
+      <div class="skill-block">
+        <div class="skill-block-title">Programming</div>
+        <div class="skill-item"><span class="name">Python</span><div class="skill-bar"><div class="skill-fill g" style="width:92%"></div></div></div>
+        <div class="skill-item"><span class="name">C / C++</span><div class="skill-bar"><div class="skill-fill g" style="width:85%"></div></div></div>
+        <div class="skill-item"><span class="name">MATLAB</span><div class="skill-bar"><div class="skill-fill g" style="width:75%"></div></div></div>
+        <div class="skill-item"><span class="name">OpenCV</span><div class="skill-bar"><div class="skill-fill g" style="width:78%"></div></div></div>
+        <div class="skill-item"><span class="name">PyTorch / TF</span><div class="skill-bar"><div class="skill-fill g" style="width:65%"></div></div></div>
+        <div class="skill-item"><span class="name">Linux / Bash</span><div class="skill-bar"><div class="skill-fill g" style="width:80%"></div></div></div>
+      </div>
+
+      <div class="skill-block">
+        <div class="skill-block-title">Concepts & Theory</div>
+        <div class="skill-item"><span class="name">Control Systems</span><div class="skill-bar"><div class="skill-fill" style="width:80%"></div></div></div>
+        <div class="skill-item"><span class="name">Computer Vision</span><div class="skill-bar"><div class="skill-fill" style="width:75%"></div></div></div>
+        <div class="skill-item"><span class="name">Path Planning</span><div class="skill-bar"><div class="skill-fill" style="width:70%"></div></div></div>
+        <div class="skill-item"><span class="name">Kinematics</span><div class="skill-bar"><div class="skill-fill" style="width:72%"></div></div></div>
+        <div class="skill-item"><span class="name">Machine Learning</span><div class="skill-bar"><div class="skill-fill" style="width:68%"></div></div></div>
+        <div class="skill-item"><span class="name">PID / MPC</span><div class="skill-bar"><div class="skill-fill" style="width:76%"></div></div></div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- PROJECTS -->
+<section class="main" id="projects">
+  <div class="inner">
+    <div class="sec-head rv">
+      <span class="sec-code">section_03 — projects</span>
+      <h2>What I've <span>built</span></h2>
+    </div>
+    <div class="projects-list rv">
+
+      <div class="proj">
+        <div class="proj-num">01</div>
+        <div class="proj-body">
+          <div class="proj-name">Autonomous Line-Following Robot</div>
+          <div class="proj-desc">Built a PID-controlled line-following robot using an array of IR sensors and an STM32 microcontroller. Achieved smooth cornering at high speeds with dynamic gain tuning.</div>
+          <div class="proj-tags"><span class="tag">C/C++</span><span class="tag">STM32</span><span class="tag">PID Control</span><span class="tag">IR Sensors</span></div>
+        </div>
+        <a href="https://github.com/premrajput-dev/Prem-Rajput-Dev-line-Following.git" class="proj-link">GitHub ↗</a>
+      </div>
+
+      <div class="proj">
+        <div class="proj-num">02</div>
+        <div class="proj-body">
+          <div class="proj-name">ROS2 Differential Drive SLAM Bot</div>
+          <div class="proj-desc">Designed and programmed a differential-drive robot running ROS2 Nav2 stack with LiDAR-based SLAM for real-time mapping and autonomous navigation in unknown environments.</div>
+          <div class="proj-tags"><span class="tag">ROS2</span><span class="tag">Python</span><span class="tag">SLAM</span><span class="tag">LiDAR</span><span class="tag">Nav2</span></div>
+        </div>
+        <a href="https://github.com/premrajput-dev/Prem-Rajput-Dev-ROS2-Differential-Drive-SLAM-Bot.git" class="proj-link">GitHub ↗</a>
+      </div>
+
+      <div class="proj">
+        <div class="proj-num">03</div>
+        <div class="proj-body">
+          <div class="proj-name">Object Detection & Arm Pick-and-Place</div>
+          <div class="proj-desc">Integrated a YOLOv8 object detection pipeline with a 4-DOF robotic arm. Used OpenCV for camera calibration and inverse kinematics for precise pick-and-place operations.</div>
+          <div class="proj-tags"><span class="tag">Python</span><span class="tag">YOLOv8</span><span class="tag">OpenCV</span><span class="tag">Kinematics</span><span class="tag">Servo</span></div>
+        </div>
+        <a href="https://github.com/premrajput-dev/Prem-Rajput-Dev-Object-Detection-.git" class="proj-link">GitHub ↗</a>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section class="main" id="contact">
+  <div class="inner">
+    <div class="sec-head rv">
+      <span class="sec-code">section_04 — contact</span>
+      <h2>Get in <span>touch</span></h2>
+    </div>
+    <div class="rv" style="text-align:center;max-width:540px;margin:0 auto">
+      <p class="contact-desc">
+        Looking for internships, research collaborations, or robotics projects to work on. If you're building something interesting in the autonomy space — let's talk.
+      </p>
+      <a href="mailto:pranyrajput7@gmail.com" class="contact-email">pranyrajput7@gmail.com</a>
+      <div class="soc-row">
+        <a href="https://github.com/premrajput-dev" class="soc">GitHub</a>
+        <a href="https://www.linkedin.com/in/prem-rajput21" class="soc">LinkedIn</a>
+        <a href="https://www.instagram.com/prem.reflects" class="soc">Instagram</a>
+        <a href="#" class="soc">Resume PDF</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <span>© 2026 Prem Rajput — Robotics & Autonomous Engineering</span>
+  <a href="#hero">↑ Back to top</a>
+</footer>
+
+<script>
+// Scroll reveal
+const obs = new IntersectionObserver(entries => {
+  entries.forEach((e, i) => {
+    if (e.isIntersecting) setTimeout(() => e.target.classList.add('vis'), i * 90);
+  });
+}, { threshold: 0.08 });
+document.querySelectorAll('.rv').forEach(r => obs.observe(r));
+
+// Skill bar trigger
+const sObs = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('vis'); });
+}, { threshold: 0.4 });
+document.querySelectorAll('.skill-item').forEach(s => sObs.observe(s));
+
+// Hero entrance
+const heroEls = ['.sys-label','h1','.h1-sub','.hero-desc','.btn-row'];
+heroEls.forEach((sel, i) => {
+  const el = document.querySelector(sel);
+  if (!el) return;
+  el.style.cssText = `opacity:0;transform:translateY(20px);transition:opacity .6s ${i*0.12}s ease,transform .6s ${i*0.12}s ease`;
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    el.style.opacity = '1'; el.style.transform = 'translateY(0)';
+  }));
+});
+</script>
+</body>
+</html>
